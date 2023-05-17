@@ -19,7 +19,7 @@ jobs:
           profile: minimal
 
       - name: Install additional rust targets
-        run: rustup target add aarch64-unknown-linux-musl x86_64-unknown-linux-musl
+        run: rustup target add i686-unknown-linux-musl #x86_64-unknown-linux-musl
 
       - name: Cache rust
         uses: Swatinem/rust-cache@v2
@@ -27,16 +27,15 @@ jobs:
       - name: Install cross
         run: cargo install cross
 
-      - name: Build for x86_64
-        run: cross build --release --target x86_64-unknown-linux-musl
+#      - name: Build for x86_64
+#        run: cross build --release --target x86_64-unknown-linux-musl
 
-      - name: Build for aarch64
-        run: cross build --release --target aarch64-unknown-linux-musl
+      - name: Build for i686
+        run: cross build --release --target i686-unknown-linux-musl
 
       - name: Move and rename binaries
-        run: |
-          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
-          cp target/aarch64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-aarch64-musl
+        run: cp target/i686-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-i686-musl
+#          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
 
       - name: Upload to new release
         uses: softprops/action-gh-release@v1
@@ -44,7 +43,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: build
           tag_name: build-${{ github.run_number }}
-          files: |
-            target/omnisette-server-linux-x86_64-musl
-            target/omnisette-server-linux-aarch64-musl
+          files: target/omnisette-server-linux-i686-musl
+#            target/omnisette-server-linux-x86_64-musl
           body: experimental
