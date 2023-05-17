@@ -37,12 +37,10 @@ jobs:
         run: cp target/i686-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-i686-musl
 #          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
 
-      - name: Upload to new release
-        uses: softprops/action-gh-release@v1
+      - name: Upload to nightly release
+        uses: IsaacShelton/update-existing-release@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: build
-          tag_name: build-${{ github.run_number }}
+          release: "Build"
+          tag: "build"
           files: target/omnisette-server-linux-i686-musl
-#            target/omnisette-server-linux-x86_64-musl
-          body: experimental
