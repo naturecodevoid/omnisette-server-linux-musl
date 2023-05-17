@@ -2,8 +2,6 @@ name: Build omnisette-server
 
 on:
   push:
-    tags:
-    - '*'
 
 jobs:
   build:
@@ -30,26 +28,23 @@ jobs:
         run: cargo install cross
 
       - name: Build for x86_64
-        run: cargo build --release --target x86_64-unknown-linux-musl
+        run: cross build --release --target x86_64-unknown-linux-musl
 
       - name: Build for aarch64
         run: cross build --release --target aarch64-unknown-linux-musl
 
       - name: Move and rename binaries
         run: |
-          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64
-          cp target/aarch64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-aarch64
+          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
+          cp target/aarch64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-aarch64-musl
 
       - name: Upload to new release
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
+          name: build
+          tag_name: build-${{ github.run_number }}
           files: |
             target/omnisette-server-linux-x86_64-musl
             target/omnisette-server-linux-aarch64-musl
-          body: |
-            ## Changelog
-
-            - TODO
+          body: experimental
