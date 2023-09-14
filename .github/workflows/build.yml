@@ -19,7 +19,7 @@ jobs:
           profile: minimal
 
       - name: Install additional rust targets
-        run: rustup target add i686-unknown-linux-musl #x86_64-unknown-linux-musl
+        run: rustup target add aarch64-unknown-linux-musl x86_64-unknown-linux-musl i686-unknown-linux-musl
 
       - name: Cache rust
         uses: Swatinem/rust-cache@v2
@@ -27,17 +27,38 @@ jobs:
       - name: Install cross
         run: cargo install cross
 
-#      - name: Build for x86_64
-#        run: cross build --release --target x86_64-unknown-linux-musl
+      - name: Build for aarch64
+        run: |
+          cross build --release --target aarch64-unknown-linux-musl
+          cp target/aarch64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-aarch64-musl
+
+      - name: Upload aarch64
+        uses: IsaacShelton/update-existing-release@v1.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release: "Build"
+          tag: "build"
+          files: target/omnisette-server-linux-aarch64-musl
+
+      - name: Build for x86_64
+        run: |
+          cross build --release --target x86_64-unknown-linux-musl
+          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
+
+      - name: Upload x86_64
+        uses: IsaacShelton/update-existing-release@v1.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release: "Build"
+          tag: "build"
+          files: target/omnisette-server-linux-x86_64-musl
 
       - name: Build for i686
-        run: cross build --release --target i686-unknown-linux-musl
+        run: |
+          cross build --release --target i686-unknown-linux-musl
+          cp target/i686-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-i686-musl
 
-      - name: Move and rename binaries
-        run: cp target/i686-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-i686-musl
-#          cp target/x86_64-unknown-linux-musl/release/omnisette-server target/omnisette-server-linux-x86_64-musl
-
-      - name: Upload to nightly release
+      - name: Upload i686
         uses: IsaacShelton/update-existing-release@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
